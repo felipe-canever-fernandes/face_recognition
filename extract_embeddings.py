@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 
-from cv2 import dnn
+from cv2 import dnn, dnn_Net
 
 argument_parser: ArgumentParser = ArgumentParser()
 
@@ -28,7 +28,10 @@ argument_parser.add_argument(
 arguments = argument_parser.parse_args()
 
 print("Loading face detector...")
-detector = dnn.readNetFromCaffe(arguments.prototxt, arguments.caffe_model)
+detector: dnn_Net = dnn.readNetFromCaffe(
+	arguments.prototxt,
+	arguments.caffe_model,
+)
 
 print("Loading embedding model...")
-embedder = dnn.readNetFromTorch(arguments.embedding_model)
+embedder: dnn_Net = dnn.readNetFromTorch(arguments.embedding_model)
