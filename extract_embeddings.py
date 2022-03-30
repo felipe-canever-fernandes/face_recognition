@@ -126,7 +126,7 @@ for image_index, image_path in enumerate(image_paths):
 	embedding: ndarray = embedder.forward()
 
 	names.append(face_name)
-	embeddings.append(embedding)
+	embeddings.append(embedding.flatten())
 
 print(f"Serializing {len(names)} embeddings...")
 
