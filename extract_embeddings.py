@@ -5,7 +5,7 @@ import cv2
 from cv2 import dnn, dnn_Net, imread
 import imutils
 from imutils import paths
-from numpy import ndarray
+from numpy import argmax, array, float32, ndarray
 
 argument_parser: ArgumentParser = ArgumentParser()
 
@@ -35,6 +35,14 @@ argument_parser.add_argument(
 	"--input",
 	required=True,
 	help="path to input directory of face images",
+)
+
+argument_parser.add_argument(
+	"-c",
+	"--confidence",
+	type=float,
+	default=0.5,
+	help="minimum probability, to filter weak detections",
 )
 
 arguments = argument_parser.parse_args()
@@ -74,3 +82,18 @@ for image_index, image_path in enumerate(image_paths):
 
 	detector.setInput(image_blob)
 	detections: ndarray = detector.forward()
+	
+	if len(detections) <= 0:
+		continue
+
+	maximum_confidence_index: int = argmax(detections[0, 0, :, 2])
+	confidence: float32 = detections[0, 0, maximum_confidence_index, 2]
+
+	if confidence < arguments.confidence:
+		continue
+
+	box: ndarray = detections[0, 0, maximum_confidence_index, 3 : 7]
+	box *= array([image_width, image_height, image_width, image_height])
+	start_x, start_y, end_x, end_y = box.astype("int")
+
+	face: ndarray = image[start_y : end_y, start_x : end_x]
