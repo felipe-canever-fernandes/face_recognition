@@ -132,7 +132,7 @@ print(f"Serializing {len(names)} embeddings...")
 
 data: "dict[str, list]" = {
 	"names": names,
-	"embeddings": embeddings
+	"embeddings": embeddings,
 }
 
 with open(arguments.embeddings, "wb") as file:
