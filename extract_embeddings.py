@@ -57,15 +57,18 @@ argument_parser.add_argument(
 arguments = argument_parser.parse_args()
 
 print("Loading face detector...")
+
 detector: dnn_Net = dnn.readNetFromCaffe(
 	arguments.prototxt,
 	arguments.caffe_model,
 )
 
 print("Loading embedding model...")
+
 embedder: dnn_Net = dnn.readNetFromTorch(arguments.embedding_model)
 
 print("Quantifying faces...")
+
 image_paths: "list[str]" = list(paths.list_images(arguments.input))
 
 MODEL_IMAGE_SIZE: "tuple[int, int]" = (300, 300)
