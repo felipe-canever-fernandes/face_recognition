@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from os import path
 
+import cv2
 from cv2 import dnn, dnn_Net, imread
 import imutils
 from imutils import paths
@@ -52,9 +53,6 @@ image_paths: "list[str]" = list(paths.list_images(arguments.input))
 
 MODEL_IMAGE_SIZE: "tuple[int, int]" = (300, 300)
 
-embeddings: "list[ndarray]" = []
-names: "list[str]" = []
-
 for image_index, image_path in enumerate(image_paths):
 	print(f"Processing image {image_index + 1}/{len(image_paths)}...")
 
@@ -62,3 +60,17 @@ for image_index, image_path in enumerate(image_paths):
 
 	image: ndarray = imread(image_path)
 	image = imutils.resize(image, width=600)
+
+	image_height, image_width = image.shape[: 2]
+
+	image_blob: ndarray = dnn.blobFromImage(
+		image=cv2.resize(image, MODEL_IMAGE_SIZE),
+		scalefactor=1.0,
+		size=MODEL_IMAGE_SIZE,
+		mean=(104.0, 177.0, 123.0),
+		swapRB=False,
+		crop=False,
+	)
+
+	detector.setInput(image_blob)
+	detections: ndarray = detector.forward()
