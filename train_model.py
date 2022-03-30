@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from pickle import loads
 
 from sklearn.preprocessing import LabelEncoder
+from sklearn.svm import SVC
 from numpy import ndarray
 
 argument_parser: ArgumentParser = ArgumentParser()
@@ -26,3 +27,13 @@ print("Encoding labels...")
 
 label_encoder: LabelEncoder = LabelEncoder()
 labels: ndarray = label_encoder.fit_transform(data["names"])
+
+print("Training model...")
+
+recognizer: SVC = SVC(
+	C=1.0,
+	kernel="linear",
+	probability=True,
+)
+
+recognizer.fit(data["embeddings"], labels)
