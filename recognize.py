@@ -3,6 +3,7 @@ from pickle import loads
 
 from cv2 import dnn, dnn_Net
 from sklearn.preprocessing import LabelEncoder
+from sklearn.svm import SVC
 
 
 argument_parser: ArgumentParser = ArgumentParser()
@@ -35,6 +36,13 @@ argument_parser.add_argument(
 	help="path to label encoder",
 )
 
+argument_parser.add_argument(
+	"-r",
+	"--recognizer",
+	required=True,
+	help="path to model trained to recognize faces",
+)
+
 arguments = argument_parser.parse_args()
 
 print("Loading face detector...")
@@ -48,7 +56,11 @@ print("Loading embedding model...")
 
 embedder: dnn_Net = dnn.readNetFromTorch(arguments.embedding_model)
 
-label_encoder: LabelEncoder = None
+def read_data(path: str):
+	with open(path, "rb") as file:
+		return loads(file.read())
 
-with open(arguments.label_encoder, "rb") as file:
-	label_encoder = loads(file.read())
+print("Loading face recognizer...")
+
+label_encoder: LabelEncoder = read_data(arguments.label_encoder)
+recognizer: SVC = read_data(arguments.recognizer)
