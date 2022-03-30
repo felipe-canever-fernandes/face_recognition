@@ -12,7 +12,7 @@ argument_parser.add_argument(
 )
 
 argument_parser.add_argument(
-	"-c",
+	"-cm",
 	"--caffe-model",
 	required=True,
 	help="path to Caffe pre-trained model",
