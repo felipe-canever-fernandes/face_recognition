@@ -21,6 +21,13 @@ argument_parser.add_argument(
 	help="path to output model trained to recognize faces",
 )
 
+argument_parser.add_argument(
+	"-le",
+	"--label-encoder",
+	required=True,
+	help="path to output label encoder",
+)
+
 arguments = argument_parser.parse_args()
 
 print("Loading face embeddings...")
@@ -33,6 +40,13 @@ with open(arguments.embeddings, "rb") as file:
 print("Encoding labels...")
 
 label_encoder: LabelEncoder = LabelEncoder()
+
+def write_data(path: str, object) -> None:
+	with open(path, "wb") as file:
+		file.write(dumps(object))
+
+write_data(arguments.label_encoder, label_encoder)
+
 labels: ndarray = label_encoder.fit_transform(data["names"])
 
 print("Training model...")
@@ -45,5 +59,4 @@ recognizer: SVC = SVC(
 
 recognizer.fit(data["embeddings"], labels)
 
-with open(arguments.recognizer, "wb") as file:
-	file.write(dumps(recognizer))
+write_data(arguments.recognizer, recognizer)
