@@ -19,7 +19,7 @@ argument_parser.add_argument(
 )
 
 argument_parser.add_argument(
-	"-e",
+	"-em",
 	"--embedding-model",
 	required=True,
 	help="path to OpenCV's deep learning face embedding model",
