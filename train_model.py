@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from pickle import loads
+from pickle import dumps, loads
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
@@ -12,6 +12,13 @@ argument_parser.add_argument(
 	"--embeddings",
 	required=True,
 	help="path to serialized database of facial embeddings",
+)
+
+argument_parser.add_argument(
+	"-r",
+	"--recognizer",
+	required=True,
+	help="path to output model trained to recognize faces",
 )
 
 arguments = argument_parser.parse_args()
@@ -37,3 +44,6 @@ recognizer: SVC = SVC(
 )
 
 recognizer.fit(data["embeddings"], labels)
+
+with open(arguments.recognizer, "wb") as file:
+	file.write(dumps(recognizer))
