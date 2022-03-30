@@ -61,6 +61,9 @@ image_paths: "list[str]" = list(paths.list_images(arguments.input))
 
 MODEL_IMAGE_SIZE: "tuple[int, int]" = (300, 300)
 
+embeddings: "list[ndarray]" = []
+names: "list[str]" = []
+
 for image_index, image_path in enumerate(image_paths):
 	print(f"Processing image {image_index + 1}/{len(image_paths)}...")
 
@@ -97,3 +100,22 @@ for image_index, image_path in enumerate(image_paths):
 	start_x, start_y, end_x, end_y = box.astype("int")
 
 	face: ndarray = image[start_y : end_y, start_x : end_x]
+	face_height, face_width = face.shape[: 2]
+
+	if face_width < 20 or face_height < 20:
+		continue
+
+	face_blob: ndarray = dnn.blobFromImage(
+		image=face,
+		scalefactor=1.0 / 255,
+		size=(96, 96),
+		mean=(0, 0, 0),
+		swapRB=True,
+		crop=False,
+	)
+
+	embedder.setInput(face_blob)
+	embedding: ndarray = embedder.forward()
+
+	names.append(face_name)
+	embeddings.append(embedding)
