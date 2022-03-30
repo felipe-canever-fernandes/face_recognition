@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from pickle import dumps
 from os import path
 
 import cv2
@@ -43,6 +44,13 @@ argument_parser.add_argument(
 	type=float,
 	default=0.5,
 	help="minimum probability, to filter weak detections",
+)
+
+argument_parser.add_argument(
+	"-e",
+	"--embeddings",
+	required=True,
+	help="path to output serialized database of facial embeddings",
 )
 
 arguments = argument_parser.parse_args()
@@ -119,3 +127,13 @@ for image_index, image_path in enumerate(image_paths):
 
 	names.append(face_name)
 	embeddings.append(embedding)
+
+print(f"Serializing {len(names)} embeddings...")
+
+data: "dict[str, list]" = {
+	"names": names,
+	"embeddings": embeddings
+}
+
+with open(arguments.embeddings, "wb") as file:
+	file.write(dumps(data))
