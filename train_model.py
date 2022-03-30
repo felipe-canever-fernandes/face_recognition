@@ -5,6 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 from numpy import ndarray
 
+
 argument_parser: ArgumentParser = ArgumentParser()
 
 argument_parser.add_argument(

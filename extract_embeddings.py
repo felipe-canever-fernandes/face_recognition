@@ -8,6 +8,7 @@ import imutils
 from imutils import paths
 from numpy import argmax, array, float32, ndarray
 
+
 argument_parser: ArgumentParser = ArgumentParser()
 
 argument_parser.add_argument(
