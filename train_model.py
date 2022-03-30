@@ -1,6 +1,9 @@
 from argparse import ArgumentParser
 from pickle import loads
 
+from sklearn.preprocessing import LabelEncoder
+from numpy import ndarray
+
 argument_parser: ArgumentParser = ArgumentParser()
 
 argument_parser.add_argument(
@@ -18,3 +21,8 @@ data: "dict[str, list]" = {}
 
 with open(arguments.embeddings, "rb") as file:
 	data = loads(file.read())
+
+print("Encoding labels...")
+
+label_encoder: LabelEncoder = LabelEncoder()
+labels: ndarray = label_encoder.fit_transform(data["names"])
