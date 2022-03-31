@@ -63,10 +63,6 @@ arguments: Namespace = get_arguments(
 	),
 )
 
-print("Loading embedding model...")
-
-embedder: dnn_Net = dnn.readNetFromTorch(arguments.embedding_model)
-
 def read_data(path: str):
 	with open(path, "rb") as file:
 		return loads(file.read())
@@ -102,6 +98,10 @@ detections: ndarray = detector.forward()
 
 image_height, image_width = image.shape[: 2]
 
+print("Loading embedding model...")
+
+embedder: dnn_Net = dnn.readNetFromTorch(arguments.embedding_model)
+
 for i in range(detections.shape[2]):
 	confidence: float32 = detections[0, 0, i, 2]
 
@@ -113,3 +113,19 @@ for i in range(detections.shape[2]):
 	start_x, start_y, end_x, end_y = box.astype("int")
 
 	face: ndarray = image[start_y : end_y, start_x : end_x]
+	face_height, face_width = face.shape[: 2]
+
+	if face_width < 20 or face_height < 20:
+		continue
+
+	face_blob: ndarray = dnn.blobFromImage(
+		image=face,
+		scalefactor=1.0 / 255,
+		size=(96, 96),
+		mean=(0, 0, 0),
+		swapRB=True,
+		crop=False,
+	)
+
+	embedder.setInput(face_blob)
+	embedding: ndarray = embedder.forward()
