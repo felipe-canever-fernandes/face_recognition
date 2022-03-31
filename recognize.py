@@ -64,6 +64,13 @@ arguments: Namespace = get_arguments(
 	),
 )
 
+print("Loading face detector...")
+
+detector: dnn_Net = dnn.readNetFromCaffe(
+	arguments.prototxt,
+	arguments.caffe_model,
+)
+
 image: ndarray = imread(arguments.image)
 image = imutils.resize(image, width=600)
 
@@ -76,13 +83,6 @@ image_blob: ndarray = dnn.blobFromImage(
 	mean=(104.0, 177.0, 123.0),
 	swapRB=False,
 	crop=False,
-)
-
-print("Loading face detector...")
-
-detector: dnn_Net = dnn.readNetFromCaffe(
-	arguments.prototxt,
-	arguments.caffe_model,
 )
 
 detector.setInput(image_blob)
@@ -107,13 +107,13 @@ label_encoder: LabelEncoder = read_data(arguments.label_encoder)
 
 RED: "tuple[int, int, int]" = (0, 0, 255)
 
-for detection_index in range(detections.shape[2]):
-	confidence: float32 = detections[0, 0, detection_index, 2]
+for i_detection in range(detections.shape[2]):
+	confidence: float32 = detections[0, 0, i_detection, 2]
 
 	if confidence < arguments.confidence:
 		continue
 
-	box: ndarray = detections[0, 0, detection_index, 3 : 7]
+	box: ndarray = detections[0, 0, i_detection, 3 : 7]
 	box *= array([image_width, image_height, image_width, image_height])
 	start_x, start_y, end_x, end_y = box.astype("int")
 
@@ -122,6 +122,14 @@ for detection_index in range(detections.shape[2]):
 
 	if face_width < 20 or face_height < 20:
 		continue
+
+	rectangle(
+		image,
+		(start_x, start_y),
+		(end_x, end_y),
+		color=RED,
+		thickness=2,
+	)
 
 	face_blob: ndarray = dnn.blobFromImage(
 		image=face,
@@ -137,18 +145,10 @@ for detection_index in range(detections.shape[2]):
 
 	predictions: ndarray = recognizer.predict_proba(embedding)[0]
 
-	maximum_probability_index: int = argmax(predictions)
+	i_maximum_probability: int = argmax(predictions)
 
-	rectangle(
-		image,
-		(start_x, start_y),
-		(end_x, end_y),
-		color=RED,
-		thickness=2,
-	)
-
-	name: str = label_encoder.classes_[maximum_probability_index]
-	probability: float64 = predictions[maximum_probability_index]
+	name: str = label_encoder.classes_[i_maximum_probability]
+	probability: float64 = predictions[i_maximum_probability]
 
 	y = start_y - 10 if start_y - 10 > 10 else start_y + 10
 
