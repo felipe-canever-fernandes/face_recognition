@@ -1,7 +1,9 @@
 from argparse import ArgumentParser
 from pickle import loads
 
-from cv2 import dnn, dnn_Net
+from cv2 import dnn, dnn_Net, imread
+import imutils
+from numpy import ndarray
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 
@@ -43,6 +45,13 @@ argument_parser.add_argument(
 	help="path to model trained to recognize faces",
 )
 
+argument_parser.add_argument(
+	"-i",
+	"--image",
+	required=True,
+	help="path to input image",
+)
+
 arguments = argument_parser.parse_args()
 
 print("Loading face detector...")
@@ -64,3 +73,6 @@ print("Loading face recognizer...")
 
 label_encoder: LabelEncoder = read_data(arguments.label_encoder)
 recognizer: SVC = read_data(arguments.recognizer)
+
+image: ndarray = imread(arguments.image)
+image = imutils.resize(image, width=600)

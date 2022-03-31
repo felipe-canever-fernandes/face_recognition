@@ -152,5 +152,5 @@ cython_debug/
 #.idea/
 
 # Face Recognition
-dataset/
+*.jpg
 *.pickle
