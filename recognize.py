@@ -4,7 +4,7 @@ from pickle import loads
 import cv2
 from cv2 import dnn, dnn_Net, imread
 import imutils
-from numpy import array, float32, ndarray
+from numpy import argmax, array, float32, float64, ndarray
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 
@@ -63,15 +63,6 @@ arguments: Namespace = get_arguments(
 	),
 )
 
-def read_data(path: str):
-	with open(path, "rb") as file:
-		return loads(file.read())
-
-print("Loading face recognizer...")
-
-label_encoder: LabelEncoder = read_data(arguments.label_encoder)
-recognizer: SVC = read_data(arguments.recognizer)
-
 image: ndarray = imread(arguments.image)
 image = imutils.resize(image, width=600)
 
@@ -102,13 +93,24 @@ print("Loading embedding model...")
 
 embedder: dnn_Net = dnn.readNetFromTorch(arguments.embedding_model)
 
-for i in range(detections.shape[2]):
-	confidence: float32 = detections[0, 0, i, 2]
+
+def read_data(path: str):
+	with open(path, "rb") as file:
+		return loads(file.read())
+
+
+print("Loading face recognizer...")
+
+recognizer: SVC = read_data(arguments.recognizer)
+label_encoder: LabelEncoder = read_data(arguments.label_encoder)
+
+for detection_index in range(detections.shape[2]):
+	confidence: float32 = detections[0, 0, detection_index, 2]
 
 	if confidence < arguments.confidence:
 		continue
 
-	box: ndarray = detections[0, 0, i, 3 : 7]
+	box: ndarray = detections[0, 0, detection_index, 3 : 7]
 	box *= array([image_width, image_height, image_width, image_height])
 	start_x, start_y, end_x, end_y = box.astype("int")
 
@@ -129,3 +131,10 @@ for i in range(detections.shape[2]):
 
 	embedder.setInput(face_blob)
 	embedding: ndarray = embedder.forward()
+
+	predictions: ndarray = recognizer.predict_proba(embedding)[0]
+
+	maximum_probability_index: int = argmax(predictions)
+
+	probability: float64 = predictions[maximum_probability_index]
+	name: str = label_encoder.classes_[maximum_probability_index]
