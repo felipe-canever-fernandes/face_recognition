@@ -2,7 +2,7 @@ from argparse import Namespace
 from pickle import loads
 
 import cv2
-from cv2 import dnn, dnn_Net, imread
+from cv2 import dnn, dnn_Net, imread, rectangle
 import imutils
 from numpy import argmax, array, float32, float64, ndarray
 from sklearn.preprocessing import LabelEncoder
@@ -138,3 +138,11 @@ for detection_index in range(detections.shape[2]):
 
 	probability: float64 = predictions[maximum_probability_index]
 	name: str = label_encoder.classes_[maximum_probability_index]
+
+	rectangle(
+		image,
+		(start_x, start_y),
+		(end_x, end_y),
+		color=(0, 0, 255),
+		thickness=2,
+	)
