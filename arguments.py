@@ -36,6 +36,13 @@ EMBEDDINGS: Argument = Argument(
 	is_required=True,
 )
 
+IMAGE: Argument = Argument(
+	long_flag="--image",
+	short_flag="-i",
+	help="path to the input image",
+	is_required=True,
+)
+
 LABEL_ENCODER: Argument = Argument(
 	long_flag="--label-encoder",
 	short_flag="-le",

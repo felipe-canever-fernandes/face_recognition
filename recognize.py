@@ -5,63 +5,23 @@ import cv2
 from cv2 import FONT_HERSHEY_SIMPLEX, dnn, dnn_Net, imread, imshow, putText
 from cv2 import rectangle, waitKey
 import imutils
-from numpy import argmax, array, float32, float64, imag, ndarray
+from numpy import argmax, array, float32, float64, ndarray
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 
-from argument_parsing import Argument, get_arguments
+from argument_parsing import get_arguments
+from arguments import CAFFE_MODEL, CONFIDENCE, EMBEDDING_MODEL, IMAGE
+from arguments import LABEL_ENCODER, PROTOTXT, RECOGNIZER
 
 
 arguments: Namespace = get_arguments(
-	Argument(
-		long_flag="--prototxt",
-		short_flag="-p",
-		help="path to Caffe prototxt file",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--caffe-model",
-		short_flag="-cm",
-		help="path to Caffe pre-trained model",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--embedding-model",
-		short_flag="-em",
-		help="path to OpenCV's deep learning face embedding model",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--label-encoder",
-		short_flag="-le",
-		help="path to label encoder",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--recognizer",
-		short_flag="-r",
-		help="path to model trained to recognize faces",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--image",
-		short_flag="-i",
-		help="path to input image",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--confidence",
-		short_flag="-c",
-		help="minimum probability, to filter weak detections",
-		type=float,
-		default_value=0.5,
-	),
+	PROTOTXT,
+	CAFFE_MODEL,
+	IMAGE,
+	EMBEDDING_MODEL,
+	RECOGNIZER,
+	LABEL_ENCODER,
+	CONFIDENCE,
 )
 
 print("Loading face detector...")
