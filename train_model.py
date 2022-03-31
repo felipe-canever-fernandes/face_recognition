@@ -33,6 +33,8 @@ arguments: Namespace = get_arguments(
 
 print("Loading face embeddings...")
 
+print("Loading face embeddings...")
+
 data: "dict[str, list]" = {}
 
 with open(arguments.embeddings, "rb") as file:
@@ -43,9 +45,11 @@ print("Encoding labels...")
 label_encoder: LabelEncoder = LabelEncoder()
 labels: ndarray = label_encoder.fit_transform(data["names"])
 
+
 def write_data(path: str, object) -> None:
 	with open(path, "wb") as file:
 		file.write(dumps(object))
+
 
 write_data(arguments.label_encoder, label_encoder)
 
