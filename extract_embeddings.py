@@ -13,37 +13,37 @@ from argument_parsing import Argument, get_arguments
 
 arguments: Namespace = get_arguments(
 	Argument(
-		long_flag="--input",
-		short_flag="-i",
-		help="path to input directory of face images",
+		long_flag="--dataset",
+		short_flag="-d",
+		help="path to the directory containing each subject's folder",
 		is_required=True,
 	),
 
 	Argument(
 		long_flag="--prototxt",
 		short_flag="-p",
-		help="path to Caffe prototxt file",
+		help="path to the Caffe prototxt file",
 		is_required=True,
 	),
 
 	Argument(
 		long_flag="--caffe-model",
 		short_flag="-cm",
-		help="path to Caffe pre-trained model",
+		help="path to the pre-trained Caffe model",
 		is_required=True,
 	),
 
 	Argument(
 		long_flag="--embedding-model",
 		short_flag="-em",
-		help="path to OpenCV's deep learning face embedding model",
+		help="path to OpenCV's deep-learning face-embedding model",
 		is_required=True,
 	),
 
 	Argument(
 		long_flag="--confidence",
 		short_flag="-c",
-		help="minimum probability, to filter weak detections",
+		help="the minimum probability, to filter weak detections",
 		type=float,
 		default_value=0.5,
 	),
@@ -51,12 +51,12 @@ arguments: Namespace = get_arguments(
 	Argument(
 		long_flag="--embeddings",
 		short_flag="-e",
-		help="path to output serialized database of facial embeddings",
+		help="path to the output serialized database of facial embeddings",
 		is_required=True,
 	),
 )
 
-image_paths: "list[str]" = list(paths.list_images(arguments.input))
+image_paths: "list[str]" = list(paths.list_images(arguments.dataset))
 MODEL_IMAGE_SIZE: "tuple[int, int]" = (300, 300)
 
 print("Loading face detector...")
