@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from pickle import loads
 
+import cv2
 from cv2 import dnn, dnn_Net, imread
 import imutils
 from numpy import ndarray
@@ -54,13 +55,6 @@ argument_parser.add_argument(
 
 arguments = argument_parser.parse_args()
 
-print("Loading face detector...")
-
-detector: dnn_Net = dnn.readNetFromCaffe(
-	arguments.prototxt,
-	arguments.caffe_model,
-)
-
 print("Loading embedding model...")
 
 embedder: dnn_Net = dnn.readNetFromTorch(arguments.embedding_model)
@@ -76,3 +70,24 @@ recognizer: SVC = read_data(arguments.recognizer)
 
 image: ndarray = imread(arguments.image)
 image = imutils.resize(image, width=600)
+
+MODEL_IMAGE_SIZE: "tuple[int, int]" = (300, 300)
+
+image_blob: ndarray = dnn.blobFromImage(
+	image=cv2.resize(image, MODEL_IMAGE_SIZE),
+	scalefactor=1.0,
+	size=MODEL_IMAGE_SIZE,
+	mean=(104.0, 177.0, 123.0),
+	swapRB=False,
+	crop=False,
+)
+
+print("Loading face detector...")
+
+detector: dnn_Net = dnn.readNetFromCaffe(
+	arguments.prototxt,
+	arguments.caffe_model,
+)
+
+detector.setInput(image_blob)
+detections: ndarray = detector.forward()
