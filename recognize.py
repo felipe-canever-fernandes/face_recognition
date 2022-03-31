@@ -2,9 +2,10 @@ from argparse import Namespace
 from pickle import loads
 
 import cv2
-from cv2 import FONT_HERSHEY_SIMPLEX, dnn, dnn_Net, imread, putText, rectangle
+from cv2 import FONT_HERSHEY_SIMPLEX, dnn, dnn_Net, imread, imshow, putText
+from cv2 import rectangle, waitKey
 import imutils
-from numpy import argmax, array, float32, float64, ndarray
+from numpy import argmax, array, float32, float64, imag, ndarray
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 
@@ -160,3 +161,6 @@ for detection_index in range(detections.shape[2]):
 		color=RED,
 		thickness=2,
 	)
+
+imshow("Image", image)
+waitKey(0)
