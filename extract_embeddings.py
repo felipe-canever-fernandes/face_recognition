@@ -8,52 +8,18 @@ import imutils
 from imutils import paths
 from numpy import argmax, array, float32, ndarray
 
-from argument_parsing import Argument, get_arguments
+from argument_parsing import get_arguments
+from arguments import CAFFE_MODEL, CONFIDENCE, DATASET, EMBEDDING_MODEL
+from arguments import EMBEDDINGS, PROTOTXT
 
 
 arguments: Namespace = get_arguments(
-	Argument(
-		long_flag="--dataset",
-		short_flag="-d",
-		help="path to the directory containing each subject's folder",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--prototxt",
-		short_flag="-p",
-		help="path to the Caffe prototxt file",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--caffe-model",
-		short_flag="-cm",
-		help="path to the pre-trained Caffe model",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--embedding-model",
-		short_flag="-em",
-		help="path to OpenCV's deep-learning face-embedding model",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--confidence",
-		short_flag="-c",
-		help="the minimum probability, to filter weak detections",
-		type=float,
-		default_value=0.5,
-	),
-
-	Argument(
-		long_flag="--embeddings",
-		short_flag="-e",
-		help="path to the output serialized database of facial embeddings",
-		is_required=True,
-	),
+	DATASET,
+	PROTOTXT,
+	CAFFE_MODEL,
+	EMBEDDING_MODEL,
+	CONFIDENCE,
+	EMBEDDINGS,
 )
 
 image_paths: "list[str]" = list(paths.list_images(arguments.dataset))
