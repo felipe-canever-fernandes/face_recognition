@@ -1,35 +1,35 @@
-from argparse import ArgumentParser
+from argparse import Namespace
 from pickle import dumps, loads
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 from numpy import ndarray
 
+from argument_parsing import Argument, get_arguments
 
-argument_parser: ArgumentParser = ArgumentParser()
 
-argument_parser.add_argument(
-	"-e",
-	"--embeddings",
-	required=True,
-	help="path to serialized database of facial embeddings",
+arguments: Namespace = get_arguments(
+	Argument(
+		long_flag="--embeddings",
+		short_flag="-e",
+		help="path to serialized database of facial embeddings",
+		is_required=True,
+	),
+
+	Argument(
+		long_flag="--recognizer",
+		short_flag="-r",
+		help="path to output model trained to recognize faces",
+		is_required=True,
+	),
+
+	Argument(
+		long_flag="--label-encoder",
+		short_flag="-le",
+		help="path to output label encoder",
+		is_required=True,
+	),
 )
-
-argument_parser.add_argument(
-	"-r",
-	"--recognizer",
-	required=True,
-	help="path to output model trained to recognize faces",
-)
-
-argument_parser.add_argument(
-	"-le",
-	"--label-encoder",
-	required=True,
-	help="path to output label encoder",
-)
-
-arguments = argument_parser.parse_args()
 
 print("Loading face embeddings...")
 
