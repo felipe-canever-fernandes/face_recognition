@@ -13,6 +13,13 @@ from argument_parsing import Argument, get_arguments
 
 arguments: Namespace = get_arguments(
 	Argument(
+		long_flag="--input",
+		short_flag="-i",
+		help="path to input directory of face images",
+		is_required=True,
+	),
+
+	Argument(
 		long_flag="--prototxt",
 		short_flag="-p",
 		help="path to Caffe prototxt file",
@@ -30,13 +37,6 @@ arguments: Namespace = get_arguments(
 		long_flag="--embedding-model",
 		short_flag="-em",
 		help="path to OpenCV's deep learning face embedding model",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--input",
-		short_flag="-i",
-		help="path to input directory of face images",
 		is_required=True,
 	),
 
