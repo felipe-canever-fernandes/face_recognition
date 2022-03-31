@@ -1,4 +1,4 @@
-from argparse import ArgumentParser
+from argparse import Namespace
 from pickle import dumps
 from os import path
 
@@ -8,53 +8,53 @@ import imutils
 from imutils import paths
 from numpy import argmax, array, float32, ndarray
 
+from argument_parsing import Argument, get_arguments
 
-argument_parser: ArgumentParser = ArgumentParser()
 
-argument_parser.add_argument(
-	"-p",
-	"--prototxt",
-	required=True,
-	help="path to Caffe prototxt file",
+arguments: Namespace = get_arguments(
+	Argument(
+		long_flag="--prototxt",
+		short_flag="-p",
+		help="path to Caffe prototxt file",
+		is_required=True,
+	),
+
+	Argument(
+		long_flag="--caffe-model",
+		short_flag="-cm",
+		help="path to Caffe pre-trained model",
+		is_required=True,
+	),
+
+	Argument(
+		long_flag="--embedding-model",
+		short_flag="-em",
+		help="path to OpenCV's deep learning face embedding model",
+		is_required=True,
+	),
+
+	Argument(
+		long_flag="--input",
+		short_flag="-i",
+		help="path to input directory of face images",
+		is_required=True,
+	),
+
+	Argument(
+		long_flag="--confidence",
+		short_flag="-c",
+		help="minimum probability, to filter weak detections",
+		type=float,
+		default_value=0.5,
+	),
+
+	Argument(
+		long_flag="--embeddings",
+		short_flag="-e",
+		help="path to output serialized database of facial embeddings",
+		is_required=True,
+	),
 )
-
-argument_parser.add_argument(
-	"-cm",
-	"--caffe-model",
-	required=True,
-	help="path to Caffe pre-trained model",
-)
-
-argument_parser.add_argument(
-	"-em",
-	"--embedding-model",
-	required=True,
-	help="path to OpenCV's deep learning face embedding model",
-)
-
-argument_parser.add_argument(
-	"-i",
-	"--input",
-	required=True,
-	help="path to input directory of face images",
-)
-
-argument_parser.add_argument(
-	"-c",
-	"--confidence",
-	type=float,
-	default=0.5,
-	help="minimum probability, to filter weak detections",
-)
-
-argument_parser.add_argument(
-	"-e",
-	"--embeddings",
-	required=True,
-	help="path to output serialized database of facial embeddings",
-)
-
-arguments = argument_parser.parse_args()
 
 print("Loading face detector...")
 
