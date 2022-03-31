@@ -2,7 +2,7 @@ from argparse import Namespace
 from pickle import loads
 
 import cv2
-from cv2 import dnn, dnn_Net, imread, rectangle
+from cv2 import FONT_HERSHEY_SIMPLEX, dnn, dnn_Net, imread, putText, rectangle
 import imutils
 from numpy import argmax, array, float32, float64, ndarray
 from sklearn.preprocessing import LabelEncoder
@@ -104,6 +104,8 @@ print("Loading face recognizer...")
 recognizer: SVC = read_data(arguments.recognizer)
 label_encoder: LabelEncoder = read_data(arguments.label_encoder)
 
+RED: "tuple[int, int, int]" = (0, 0, 255)
+
 for detection_index in range(detections.shape[2]):
 	confidence: float32 = detections[0, 0, detection_index, 2]
 
@@ -136,13 +138,25 @@ for detection_index in range(detections.shape[2]):
 
 	maximum_probability_index: int = argmax(predictions)
 
-	probability: float64 = predictions[maximum_probability_index]
-	name: str = label_encoder.classes_[maximum_probability_index]
-
 	rectangle(
 		image,
 		(start_x, start_y),
 		(end_x, end_y),
-		color=(0, 0, 255),
+		color=RED,
+		thickness=2,
+	)
+
+	name: str = label_encoder.classes_[maximum_probability_index]
+	probability: float64 = predictions[maximum_probability_index]
+
+	y = start_y - 10 if start_y - 10 > 10 else start_y + 10
+
+	putText(
+		image,
+		f"{name}: {probability * 100:.2f}%",
+		(start_x, y),
+		FONT_HERSHEY_SIMPLEX,
+		fontScale=0.45,
+		color=RED,
 		thickness=2,
 	)
