@@ -5,33 +5,15 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 from numpy import ndarray
 
-from argument_parsing import Argument, get_arguments
+from argument_parsing import get_arguments
+from arguments import EMBEDDINGS, LABEL_ENCODER, RECOGNIZER
 
 
 arguments: Namespace = get_arguments(
-	Argument(
-		long_flag="--embeddings",
-		short_flag="-e",
-		help="path to serialized database of facial embeddings",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--recognizer",
-		short_flag="-r",
-		help="path to output model trained to recognize faces",
-		is_required=True,
-	),
-
-	Argument(
-		long_flag="--label-encoder",
-		short_flag="-le",
-		help="path to output label encoder",
-		is_required=True,
-	),
+	EMBEDDINGS,
+	LABEL_ENCODER,
+	RECOGNIZER,
 )
-
-print("Loading face embeddings...")
 
 print("Loading face embeddings...")
 
