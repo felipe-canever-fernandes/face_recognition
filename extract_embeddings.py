@@ -2,15 +2,14 @@ from argparse import Namespace
 from pickle import dumps
 from os import path
 
-import cv2
-from cv2 import dnn, dnn_Net, imread
-import imutils
+from cv2 import dnn, dnn_Net
 from imutils import paths
 from numpy import argmax, array, float32, ndarray
 
 from argument_parsing import get_arguments
 from arguments import CAFFE_MODEL, CONFIDENCE, DATASET, EMBEDDING_MODEL
 from arguments import EMBEDDINGS, PASS_COUNT, PROTOTXT
+from embeddings import process_image
 
 
 arguments: Namespace = get_arguments(
@@ -24,7 +23,6 @@ arguments: Namespace = get_arguments(
 )
 
 image_paths: "list[str]" = list(paths.list_images(arguments.dataset))
-MODEL_IMAGE_SIZE: "tuple[int, int]" = (300, 300)
 
 print("Loading face detector...")
 
@@ -45,17 +43,7 @@ names: "list[str]" = []
 for i_image, image_path in enumerate(image_paths):
 	print(f"Processing image {i_image + 1}/{len(image_paths)}...")
 
-	image: ndarray = imread(image_path)
-	image = imutils.resize(image, width=600)
-
-	image_blob: ndarray = dnn.blobFromImage(
-		image=cv2.resize(image, MODEL_IMAGE_SIZE),
-		scalefactor=1.0,
-		size=MODEL_IMAGE_SIZE,
-		mean=(104.0, 177.0, 123.0),
-		swapRB=False,
-		crop=False,
-	)
+	image, image_blob = process_image(image_path)
 
 	detector.setInput(image_blob)
 	detections: ndarray = detector.forward()

@@ -1,10 +1,8 @@
 from argparse import Namespace
 from pickle import loads
 
-import cv2
-from cv2 import FONT_HERSHEY_SIMPLEX, dnn, dnn_Net, imread, imshow, putText
+from cv2 import FONT_HERSHEY_SIMPLEX, dnn, dnn_Net, imshow, putText
 from cv2 import rectangle, waitKey
-import imutils
 from numpy import argmax, array, float32, float64, ndarray
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
@@ -12,6 +10,7 @@ from sklearn.svm import SVC
 from argument_parsing import get_arguments
 from arguments import CAFFE_MODEL, CONFIDENCE, EMBEDDING_MODEL, IMAGE
 from arguments import LABEL_ENCODER, PROTOTXT, RECOGNIZER
+from embeddings import process_image
 
 
 arguments: Namespace = get_arguments(
@@ -31,19 +30,7 @@ detector: dnn_Net = dnn.readNetFromCaffe(
 	arguments.caffe_model,
 )
 
-image: ndarray = imread(arguments.image)
-image = imutils.resize(image, width=600)
-
-MODEL_IMAGE_SIZE: "tuple[int, int]" = (300, 300)
-
-image_blob: ndarray = dnn.blobFromImage(
-	image=cv2.resize(image, MODEL_IMAGE_SIZE),
-	scalefactor=1.0,
-	size=MODEL_IMAGE_SIZE,
-	mean=(104.0, 177.0, 123.0),
-	swapRB=False,
-	crop=False,
-)
+image, image_blob = process_image(arguments.image)
 
 detector.setInput(image_blob)
 detections: ndarray = detector.forward()
