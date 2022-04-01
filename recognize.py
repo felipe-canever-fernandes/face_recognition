@@ -12,6 +12,7 @@ from arguments import CAFFE_MODEL, CONFIDENCE, EMBEDDING_MODEL, IMAGE
 from arguments import LABEL_ENCODER, PROTOTXT, RECOGNIZER
 from embeddings import detect_faces, extract_embedding, get_face, initialize
 from embeddings import process_image
+from utilities import read_data
 
 
 arguments: Namespace = get_arguments(
@@ -31,12 +32,6 @@ image, image_blob = process_image(arguments.image)
 detections: ndarray = detect_faces(image_blob)
 
 image_height, image_width = image.shape[: 2]
-
-
-def read_data(path: str):
-	with open(path, "rb") as file:
-		return loads(file.read())
-
 
 print("Loading face recognizer...")
 

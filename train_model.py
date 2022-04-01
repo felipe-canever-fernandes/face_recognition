@@ -1,5 +1,4 @@
 from argparse import Namespace
-from pickle import loads
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
@@ -7,7 +6,7 @@ from numpy import ndarray
 
 from argument_parsing import get_arguments
 from arguments import EMBEDDINGS, LABEL_ENCODER, RECOGNIZER
-from utilities import write_data
+from utilities import read_data, write_data
 
 
 arguments: Namespace = get_arguments(
@@ -17,11 +16,7 @@ arguments: Namespace = get_arguments(
 )
 
 print("Loading face embeddings...")
-
-data: "dict[str, list]" = {}
-
-with open(arguments.embeddings, "rb") as file:
-	data = loads(file.read())
+data: "dict[str, list]" = read_data(arguments.embeddings)
 
 print("Encoding labels...")
 
