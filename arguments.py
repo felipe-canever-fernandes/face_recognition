@@ -50,6 +50,14 @@ LABEL_ENCODER: Argument = Argument(
 	is_required=True,
 )
 
+PASS_COUNT: Argument = Argument(
+	long_flag="--pass-count",
+	short_flag="-pc",
+	help="the number of times the model will be trained with the same embeddings",
+	type=int,
+	default_value=1,
+)
+
 PROTOTXT: Argument = Argument(
 	long_flag="--prototxt",
 	short_flag="-p",

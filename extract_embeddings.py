@@ -10,7 +10,7 @@ from numpy import argmax, array, float32, ndarray
 
 from argument_parsing import get_arguments
 from arguments import CAFFE_MODEL, CONFIDENCE, DATASET, EMBEDDING_MODEL
-from arguments import EMBEDDINGS, PROTOTXT
+from arguments import EMBEDDINGS, PASS_COUNT, PROTOTXT
 
 
 arguments: Namespace = get_arguments(
@@ -19,6 +19,7 @@ arguments: Namespace = get_arguments(
 	CAFFE_MODEL,
 	EMBEDDING_MODEL,
 	CONFIDENCE,
+	PASS_COUNT,
 	EMBEDDINGS,
 )
 
@@ -95,6 +96,9 @@ for i_image, image_path in enumerate(image_paths):
 
 	face_name: str = image_path.split(path.sep)[-2]
 	names.append(face_name)
+
+names *= arguments.pass_count
+embeddings *= arguments.pass_count
 
 print(f"Serializing {len(names)} embeddings...")
 
