@@ -1,5 +1,4 @@
 from argparse import Namespace
-from pickle import dumps
 from os import path
 
 from imutils import paths
@@ -10,6 +9,7 @@ from arguments import CAFFE_MODEL, CONFIDENCE, DATASET, EMBEDDING_MODEL
 from arguments import EMBEDDINGS, PASS_COUNT, PROTOTXT
 from embeddings import detect_faces, extract_embedding, get_face, initialize
 from embeddings import process_image
+from utilities import write_data
 
 
 arguments: Namespace = get_arguments(
@@ -69,5 +69,4 @@ data: "dict[str, list]" = {
 	"embeddings": embeddings,
 }
 
-with open(arguments.embeddings, "wb") as file:
-	file.write(dumps(data))
+write_data(arguments.embeddings, data)
