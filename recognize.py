@@ -3,14 +3,14 @@ from pickle import loads
 
 from cv2 import FONT_HERSHEY_SIMPLEX, dnn, dnn_Net, imshow, putText
 from cv2 import rectangle, waitKey
-from numpy import argmax, array, float32, float64, ndarray
+from numpy import argmax, float32, float64, ndarray
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import SVC
 
 from argument_parsing import get_arguments
 from arguments import CAFFE_MODEL, CONFIDENCE, EMBEDDING_MODEL, IMAGE
 from arguments import LABEL_ENCODER, PROTOTXT, RECOGNIZER
-from embeddings import detect_faces, initialize, process_image
+from embeddings import detect_faces, get_face, initialize, process_image
 
 
 arguments: Namespace = get_arguments(
@@ -54,11 +54,12 @@ for i_detection in range(detections.shape[2]):
 	if confidence < arguments.confidence:
 		continue
 
-	box: ndarray = detections[0, 0, i_detection, 3 : 7]
-	box *= array([image_width, image_height, image_width, image_height])
-	start_x, start_y, end_x, end_y = box.astype("int")
+	face, (start_x, start_y, end_x, end_y) = get_face(
+		image,
+		detections,
+		i_detection,
+	)
 
-	face: ndarray = image[start_y : end_y, start_x : end_x]
 	face_height, face_width = face.shape[: 2]
 
 	if face_width < 20 or face_height < 20:

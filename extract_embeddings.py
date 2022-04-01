@@ -4,12 +4,12 @@ from os import path
 
 from cv2 import dnn, dnn_Net
 from imutils import paths
-from numpy import argmax, array, float32, ndarray
+from numpy import argmax, float32, ndarray
 
 from argument_parsing import get_arguments
 from arguments import CAFFE_MODEL, CONFIDENCE, DATASET, EMBEDDING_MODEL
 from arguments import EMBEDDINGS, PASS_COUNT, PROTOTXT
-from embeddings import detect_faces, initialize, process_image
+from embeddings import detect_faces, get_face, initialize, process_image
 
 
 arguments: Namespace = get_arguments(
@@ -50,13 +50,7 @@ for i_image, image_path in enumerate(image_paths):
 	if confidence < arguments.confidence:
 		continue
 
-	image_height, image_width = image.shape[: 2]
-
-	box: ndarray = detections[0, 0, i_maximum_confidence, 3 : 7]
-	box *= array([image_width, image_height, image_width, image_height])
-	start_x, start_y, end_x, end_y = box.astype("int")
-
-	face: ndarray = image[start_y : end_y, start_x : end_x]
+	face, _ = get_face(image, detections, i_maximum_confidence)
 	face_height, face_width = face.shape[: 2]
 
 	if face_width < 20 or face_height < 20:
