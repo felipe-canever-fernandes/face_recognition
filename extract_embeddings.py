@@ -9,7 +9,7 @@ from numpy import argmax, array, float32, ndarray
 from argument_parsing import get_arguments
 from arguments import CAFFE_MODEL, CONFIDENCE, DATASET, EMBEDDING_MODEL
 from arguments import EMBEDDINGS, PASS_COUNT, PROTOTXT
-from embeddings import process_image
+from embeddings import detect_faces, initialize, process_image
 
 
 arguments: Namespace = get_arguments(
@@ -25,14 +25,9 @@ arguments: Namespace = get_arguments(
 image_paths: "list[str]" = list(paths.list_images(arguments.dataset))
 
 print("Loading face detector...")
-
-detector: dnn_Net = dnn.readNetFromCaffe(
-	arguments.prototxt,
-	arguments.caffe_model,
-)
+initialize(arguments.prototxt, arguments.caffe_model)
 
 print("Loading embedding model...")
-
 embedder: dnn_Net = dnn.readNetFromTorch(arguments.embedding_model)
 
 print("Quantifying faces...")
@@ -44,9 +39,7 @@ for i_image, image_path in enumerate(image_paths):
 	print(f"Processing image {i_image + 1}/{len(image_paths)}...")
 
 	image, image_blob = process_image(image_path)
-
-	detector.setInput(image_blob)
-	detections: ndarray = detector.forward()
+	detections: ndarray = detect_faces(image_blob)
 	
 	if len(detections) <= 0:
 		continue

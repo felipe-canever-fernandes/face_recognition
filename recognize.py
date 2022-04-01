@@ -10,7 +10,7 @@ from sklearn.svm import SVC
 from argument_parsing import get_arguments
 from arguments import CAFFE_MODEL, CONFIDENCE, EMBEDDING_MODEL, IMAGE
 from arguments import LABEL_ENCODER, PROTOTXT, RECOGNIZER
-from embeddings import process_image
+from embeddings import detect_faces, initialize, process_image
 
 
 arguments: Namespace = get_arguments(
@@ -24,16 +24,10 @@ arguments: Namespace = get_arguments(
 )
 
 print("Loading face detector...")
-
-detector: dnn_Net = dnn.readNetFromCaffe(
-	arguments.prototxt,
-	arguments.caffe_model,
-)
+initialize(arguments.prototxt, arguments.caffe_model)
 
 image, image_blob = process_image(arguments.image)
-
-detector.setInput(image_blob)
-detections: ndarray = detector.forward()
+detections: ndarray = detect_faces(image_blob)
 
 image_height, image_width = image.shape[: 2]
 

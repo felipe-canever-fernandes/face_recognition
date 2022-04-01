@@ -1,11 +1,17 @@
 from numpy import ndarray
 
 import cv2
-from cv2 import dnn, imread
+from cv2 import dnn, dnn_Net, imread
 import imutils
 
 MAXIMUM_IMAGE_WIDTH: int = 600
 IMAGE_BLOB_SIZE: "tuple[int, int]" = (300, 300)
+
+detector: dnn_Net = None
+
+def initialize(prototxt_path: str, caffe_model_path: str):
+	global detector
+	detector = dnn.readNetFromCaffe(prototxt_path, caffe_model_path)
 
 def process_image(image_path: str) -> "tuple[ndarray, ndarray]":
 	image: ndarray = imread(image_path)
@@ -21,3 +27,8 @@ def process_image(image_path: str) -> "tuple[ndarray, ndarray]":
 	)
 
 	return image, image_blob
+
+def detect_faces(image_blob: ndarray) -> ndarray:
+	global detector
+	detector.setInput(image_blob)
+	return detector.forward()
