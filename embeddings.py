@@ -5,12 +5,21 @@ from numpy import array, ndarray
 
 _MAXIMUM_IMAGE_WIDTH: int = 600
 _IMAGE_BLOB_SIZE: "tuple[int, int]" = (300, 300)
+_FACE_BLOB_SIZE: "tuple[int, int]" = (96, 96)
 
 _detector: dnn_Net = None
+_embedder: dnn_Net = None
 
-def initialize(prototxt_path: str, caffe_model_path: str):
+def initialize(
+	prototxt_path: str,
+	caffe_model_path: str,
+	embedding_model_path: str,
+) -> None:
 	global _detector
 	_detector = dnn.readNetFromCaffe(prototxt_path, caffe_model_path)
+
+	global _embedder
+	_embedder = dnn.readNetFromTorch(embedding_model_path)
 
 def process_image(image_path: str) -> "tuple[ndarray, ndarray]":
 	image: ndarray = imread(image_path)
@@ -46,3 +55,18 @@ def get_face(
 	face: ndarray = image[start_y : end_y, start_x : end_x]
 
 	return face, (start_x, start_y, end_x, end_y)
+
+def extract_embedding(face: ndarray) -> ndarray:
+	face_blob: ndarray = dnn.blobFromImage(
+		image=face,
+		scalefactor=1.0 / 255,
+		size=_FACE_BLOB_SIZE,
+		mean=(0, 0, 0),
+		swapRB=True,
+		crop=False,
+	)
+
+	global _embedder
+	_embedder.setInput(face_blob)
+	
+	return _embedder.forward()

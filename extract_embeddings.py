@@ -2,14 +2,14 @@ from argparse import Namespace
 from pickle import dumps
 from os import path
 
-from cv2 import dnn, dnn_Net
 from imutils import paths
 from numpy import argmax, float32, ndarray
 
 from argument_parsing import get_arguments
 from arguments import CAFFE_MODEL, CONFIDENCE, DATASET, EMBEDDING_MODEL
 from arguments import EMBEDDINGS, PASS_COUNT, PROTOTXT
-from embeddings import detect_faces, get_face, initialize, process_image
+from embeddings import detect_faces, extract_embedding, get_face, initialize
+from embeddings import process_image
 
 
 arguments: Namespace = get_arguments(
@@ -24,11 +24,8 @@ arguments: Namespace = get_arguments(
 
 image_paths: "list[str]" = list(paths.list_images(arguments.dataset))
 
-print("Loading face detector...")
-initialize(arguments.prototxt, arguments.caffe_model)
-
-print("Loading embedding model...")
-embedder: dnn_Net = dnn.readNetFromTorch(arguments.embedding_model)
+print("Loading face detector and embedding model...")
+initialize(arguments.prototxt, arguments.caffe_model, arguments.embedding_model)
 
 print("Quantifying faces...")
 
@@ -56,17 +53,7 @@ for i_image, image_path in enumerate(image_paths):
 	if face_width < 20 or face_height < 20:
 		continue
 
-	face_blob: ndarray = dnn.blobFromImage(
-		image=face,
-		scalefactor=1.0 / 255,
-		size=(96, 96),
-		mean=(0, 0, 0),
-		swapRB=True,
-		crop=False,
-	)
-
-	embedder.setInput(face_blob)
-	embedding: ndarray = embedder.forward()
+	embedding: ndarray = extract_embedding(face)
 	embeddings.append(embedding.flatten())
 
 	face_name: str = image_path.split(path.sep)[-2]
