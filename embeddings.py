@@ -3,12 +3,14 @@ from cv2 import dnn, dnn_Net, imread
 import imutils
 from numpy import array, ndarray
 
+
 _MAXIMUM_IMAGE_WIDTH: int = 600
 _IMAGE_BLOB_SIZE: "tuple[int, int]" = (300, 300)
 _FACE_BLOB_SIZE: "tuple[int, int]" = (96, 96)
 
 _detector: dnn_Net = None
 _embedder: dnn_Net = None
+
 
 def initialize(
 	prototxt_path: str,
@@ -20,6 +22,7 @@ def initialize(
 
 	global _embedder
 	_embedder = dnn.readNetFromTorch(embedding_model_path)
+
 
 def process_image(image_path: str) -> "tuple[ndarray, ndarray]":
 	image: ndarray = imread(image_path)
@@ -36,10 +39,12 @@ def process_image(image_path: str) -> "tuple[ndarray, ndarray]":
 
 	return image, image_blob
 
+
 def detect_faces(image_blob: ndarray) -> ndarray:
 	global _detector
 	_detector.setInput(image_blob)
 	return _detector.forward()
+
 
 def get_face(
 	image: ndarray,
@@ -56,6 +61,7 @@ def get_face(
 
 	return face, (start_x, start_y, end_x, end_y)
 
+
 def extract_embedding(face: ndarray) -> ndarray:
 	face_blob: ndarray = dnn.blobFromImage(
 		image=face,
@@ -68,5 +74,5 @@ def extract_embedding(face: ndarray) -> ndarray:
 
 	global _embedder
 	_embedder.setInput(face_blob)
-	
+
 	return _embedder.forward()
